@@ -1,6 +1,6 @@
 permissionset 50100 "SMA RATE ANALYZER"
 {
-    Caption = 'SMART Rate Analyzer';
+    Caption = 'Rate Analyzer';
     Assignable = true;
 
     Permissions =

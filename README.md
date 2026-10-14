@@ -1,4 +1,4 @@
-# SMART Rate Analyzer (Business Central 29, on-prem)
+# Rate Analyzer (Business Central 29)
 
 Розширення завантажує й зберігає історію курсів валютних пар із легальних публічних API, будує живий свічковий графік і прогноз ціни на 3–5 хвилин уперед із коридором довіри.
 
@@ -30,7 +30,7 @@ Job Queue (щохвилини) ──► SMA Rate Sync Job ──► для ко
 
 ## Встановлення
 
-1. Відкрийте папку `app` у VS Code. У `.vscode/launch.json` вкажіть свій сервер BC29 і виконайте **AL: Download Symbols**.
+1. Відкрийте корінь репозиторію у VS Code (`app.json` лежить там, код — у `app/`). У `.vscode/launch.json` вкажіть своє середовище і виконайте **AL: Download Symbols**.
 2. Діапазон ID — `50100..50149`, префікс — `SMA`. Якщо на сервері цей діапазон уже зайнятий, змініть його в `app.json`.
 3. Опублікуйте розширення (F5 або Ctrl+F5) і призначте користувачам набір дозволів **SMA RATE ANALYZER**.
 4. Сервер BC має мати вихід в інтернет до `api.binance.com`, `api.twelvedata.com`, `api-fxpractice.oanda.com`. Якщо в *Extension Management → Configure* є прапорець **Allow HttpClient Requests**, увімкніть його.

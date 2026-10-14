@@ -8,10 +8,10 @@ controladdin "SMA Rate Chart"
     HorizontalShrink = true;
 
     Scripts =
-        'controladdin/RateChart/lightweight-charts.standalone.production.js',
-        'controladdin/RateChart/RateChart.js';
-    StartupScript = 'controladdin/RateChart/Start.js';
-    StyleSheets = 'controladdin/RateChart/RateChart.css';
+        'app/controladdin/RateChart/lightweight-charts.standalone.production.js',
+        'app/controladdin/RateChart/RateChart.js';
+    StartupScript = 'app/controladdin/RateChart/Start.js';
+    StyleSheets = 'app/controladdin/RateChart/RateChart.css';
 
     /// <summary>Raised when the chart is created and can receive data.</summary>
     event OnControlReady();
