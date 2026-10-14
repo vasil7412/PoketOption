@@ -1,0 +1,15 @@
+/**/.alpackages/*
+/**/.vscode/rad.json
+/**/.vscode/.alcache
+/**/.vscode/.altemplates
+
+.DS_Store
+
+.altestrunner
+rad.json
+*.app
+*.g.xlf
+/**/translations/*.g.xlf
+
+!/.previousapps/*.app
+!/.previousappsge/*.app

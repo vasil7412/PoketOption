@@ -1,0 +1,33 @@
+{
+  "id": "6c1f3a52-8e47-4b1d-9a0e-2f5d7c8b9e14",
+  "name": "SMART Rate Analyzer",
+  "publisher": "SMART business LLC",
+  "version": "1.0.0.0",
+  "brief": "Loads currency pair rate history, charts it and forecasts the price 3-5 minutes ahead.",
+  "description": "Automatically downloads and stores candle history for configured currency pairs from public market data providers (Twelve Data, OANDA, Binance), renders a live candlestick chart and builds a short-term forecast with a confidence band. Includes live accuracy tracking and backtesting of forecast methods.",
+  "privacyStatement": "https://www.smart-it.com/privacy-policy/",
+  "EULA": "https://smart-it.com/slt/",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "29.0.0.0",
+  "application": "29.0.0.0",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "18.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}

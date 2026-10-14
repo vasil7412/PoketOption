@@ -1,0 +1,102 @@
+#controlAddIn {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: "Segoe UI", "Segoe WP", Segoe, device-segoe, Tahoma, Helvetica, Arial, sans-serif;
+}
+
+.rc-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.rc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    align-items: baseline;
+    padding: 6px 8px;
+    font-size: 13px;
+    color: #212121;
+    border-bottom: 1px solid #edebe9;
+}
+
+.rc-legend .rc-pair {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.rc-legend .rc-muted {
+    color: #605e5c;
+}
+
+.rc-legend .rc-up {
+    color: #107c10;
+    font-weight: 600;
+}
+
+.rc-legend .rc-down {
+    color: #a80000;
+    font-weight: 600;
+}
+
+.rc-legend .rc-flat {
+    color: #605e5c;
+    font-weight: 600;
+}
+
+.rc-chart {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 200px;
+}
+
+.rc-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #605e5c;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.rc-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+    color: #8a8886;
+}
+
+.rc-footer a {
+    color: #8a8886;
+}
+
+.rc-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 10px;
+}
+
+.rc-swatch {
+    display: inline-block;
+    width: 16px;
+    height: 0;
+    border-top: 2px dashed #ff9800;
+}
+
+.rc-swatch.rc-band {
+    border-top: 1px dashed rgba(255, 152, 0, 0.6);
+}
+
+.rc-swatch.rc-past {
+    border-top: 2px dotted #7a7a7a;
+}
