@@ -3,6 +3,7 @@ page 50102 "SMA Currency Pair Card"
     Caption = 'Currency Pair';
     PageType = Card;
     SourceTable = "SMA Currency Pair";
+    ApplicationArea = All;
 
     layout
     {
