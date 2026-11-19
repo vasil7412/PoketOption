@@ -2,7 +2,8 @@ codeunit 50100 "SMA Rate Sync Mgt"
 {
     Permissions =
         tabledata "SMA Currency Pair" = rm,
-        tabledata "SMA Rate Candle" = rimd;
+        tabledata "SMA Rate Candle" = rimd,
+        tabledata "SMA Tracked Forecast" = rd;
 
     var
         RateHelper: Codeunit "SMA Rate Helper";
@@ -106,6 +107,7 @@ codeunit 50100 "SMA Rate Sync Mgt"
         RateAnalyzerSetup: Record "SMA Rate Analyzer Setup";
         RateCandle: Record "SMA Rate Candle";
         RateForecast: Record "SMA Rate Forecast";
+        TrackedForecast: Record "SMA Tracked Forecast";
     begin
         RateAnalyzerSetup.GetRecordOnce();
         if RateAnalyzerSetup."Keep History Days" > 0 then begin
@@ -115,6 +117,10 @@ codeunit 50100 "SMA Rate Sync Mgt"
         if RateAnalyzerSetup."Keep Forecasts Days" > 0 then begin
             RateForecast.SetFilter("Base Time", '<%1', DaysAgo(RateAnalyzerSetup."Keep Forecasts Days"));
             RateForecast.DeleteAll();
+            // the learned scores are kept, only the journal of the live forecasts is purged
+            TrackedForecast.SetCurrentKey("Created At");
+            TrackedForecast.SetFilter("Created At", '<%1', DaysAgo(RateAnalyzerSetup."Keep Forecasts Days"));
+            TrackedForecast.DeleteAll();
         end;
     end;
 

@@ -15,8 +15,8 @@ codeunit 50104 "SMA Forecast Mgt"
     procedure BuildForecast(CurrencyPair: Record "SMA Currency Pair"; ForecastMethod: Enum "SMA Forecast Method"; HorizonMin: Integer; var TempRateForecast: Record "SMA Rate Forecast" temporary): Boolean
     var
         RateAnalyzerSetup: Record "SMA Rate Analyzer Setup";
-        ForecastImpl: Interface "SMA IForecast Method";
-        Series: List of [Decimal];
+        ForecastContext: Codeunit "SMA Forecast Context";
+        ForecastEngine: Codeunit "SMA Forecast Engine";
         Points: List of [Decimal];
         Sigmas: List of [Decimal];
         TimeframeDuration: Duration;
@@ -29,17 +29,19 @@ codeunit 50104 "SMA Forecast Mgt"
         TempRateForecast.DeleteAll();
         RateAnalyzerSetup.GetRecordOnce();
 
-        if not LoadSeries(CurrencyPair, RateAnalyzerSetup."Lookback Candles", Series, BaseTime) then
+        Steps := GetSteps(HorizonMin, CurrencyPair.Timeframe);
+        // the weighted ensemble also needs the candles before the window to weight its components
+        ForecastContext.Load(CurrencyPair, RateAnalyzerSetup."Lookback Candles" + RateAnalyzerSetup.GetHistoryCandles() + Steps + 1, false);
+        if ForecastContext.CandleCount() < MinCandles() then
             exit(false);
 
-        Steps := GetSteps(HorizonMin, CurrencyPair.Timeframe);
-        ForecastImpl := ForecastMethod;
-        ForecastImpl.Forecast(Series, Steps, Points, Sigmas);
+        ForecastEngine.GetForecast(ForecastContext, ForecastMethod, Steps, Points, Sigmas);
         if Points.Count() < Steps then
             exit(false);
 
         TimeframeDuration := RateHelper.GetTimeframeDuration(CurrencyPair.Timeframe);
-        BaseClose := Series.Get(Series.Count());
+        BaseClose := ForecastContext.CloseAt(ForecastContext.CandleCount());
+        BaseTime := ForecastContext.TimeAt(ForecastContext.CandleCount());
         for Step := 1 to Steps do begin
             TempRateForecast.Init();
             TempRateForecast."Pair Code" := CurrencyPair.Code;
@@ -135,32 +137,6 @@ codeunit 50104 "SMA Forecast Mgt"
         if Steps < 1 then
             Steps := 1;
         exit(Steps);
-    end;
-
-    /// <summary>
-    /// Loads close prices of the latest MaxCount candles, oldest first.
-    /// </summary>
-    procedure LoadSeries(CurrencyPair: Record "SMA Currency Pair"; MaxCount: Integer; var Series: List of [Decimal]; var LastTime: DateTime): Boolean
-    var
-        RateCandle: Record "SMA Rate Candle";
-    begin
-        Clear(Series);
-        LastTime := 0DT;
-        RateCandle.SetRange("Pair Code", CurrencyPair.Code);
-        RateCandle.SetRange(Timeframe, CurrencyPair.Timeframe);
-        RateCandle.SetLoadFields(Close);
-#pragma warning disable AA0181, AA0233
-        if not RateCandle.FindLast() then
-            exit(false);
-        LastTime := RateCandle."Open Time";
-        // step back from the newest candle to read the latest MaxCount candles in ascending order
-        if MaxCount > 1 then
-            RateCandle.Next(-(MaxCount - 1));
-#pragma warning restore AA0181, AA0233
-        repeat
-            Series.Add(RateCandle.Close);
-        until RateCandle.Next() = 0;
-        exit(Series.Count() >= MinCandles());
     end;
 
     procedure MinCandles(): Integer

@@ -33,6 +33,44 @@ page 50100 "SMA Rate Analyzer Setup"
                 field("Holt Damping"; Rec."Holt Damping") { }
                 field("Backtest Candles"; Rec."Backtest Candles") { }
             }
+            group(Signal)
+            {
+                Caption = 'Trade Signal';
+
+                field("Payout %"; Rec."Payout %") { }
+                field("Signal Expirations (Min)"; Rec."Signal Expirations (Min)") { }
+                field("Signal Backtest Candles"; Rec."Signal Backtest Candles") { }
+                field("Signal Min. Samples"; Rec."Signal Min. Samples") { }
+                field("Time-of-Day Filter"; Rec."Time-of-Day Filter") { }
+            }
+            group(Methods)
+            {
+                Caption = 'Forecast Methods';
+
+                field("AR Order"; Rec."AR Order") { }
+                field("Mean Reversion Period"; Rec."Mean Reversion Period") { }
+                field("Mean Reversion Z"; Rec."Mean Reversion Z") { }
+                field("RSI Period"; Rec."RSI Period") { }
+                field("RSI Oversold"; Rec."RSI Oversold") { }
+                field("RSI Overbought"; Rec."RSI Overbought") { }
+                field("Stochastic Period"; Rec."Stochastic Period") { }
+                field("Stochastic Smoothing"; Rec."Stochastic Smoothing") { }
+                field("Stochastic Oversold"; Rec."Stochastic Oversold") { }
+                field("Stochastic Overbought"; Rec."Stochastic Overbought") { }
+                field("Ensemble Weight Candles"; Rec."Ensemble Weight Candles") { }
+                field("Logistic Training Candles"; Rec."Logistic Training Candles") { }
+                field("Logistic Refit Interval"; Rec."Logistic Refit Interval") { }
+                field("Logistic Min. Probability %"; Rec."Logistic Min. Probability %") { }
+            }
+            group(Learning)
+            {
+                Caption = 'Live Learning';
+
+                field("Disable Live Tracking"; Rec."Disable Live Tracking") { }
+                field("Tracking Interval (Min)"; Rec."Tracking Interval (Min)") { }
+                field("Learning Decay"; Rec."Learning Decay") { }
+                field("Min. Live Samples"; Rec."Min. Live Samples") { }
+            }
             group(History)
             {
                 Caption = 'History';
@@ -56,6 +94,7 @@ page 50100 "SMA Rate Analyzer Setup"
                         Rec.SetTwelveDataApiKey(TwelveDataApiKey);
                     end;
                 }
+                field("Binance Base URL"; Rec."Binance Base URL") { }
                 field("OANDA Environment"; Rec."OANDA Environment") { }
                 field(OANDAToken; OANDAToken)
                 {
@@ -79,7 +118,7 @@ page 50100 "SMA Rate Analyzer Setup"
             action(CreateDefaultPairs)
             {
                 Caption = 'Create Default Pairs';
-                ToolTip = 'Creates sample currency pairs: BTCUSDT and ETHUSDT from Binance (no key needed), EURUSD, GBPUSD and USDJPY from Twelve Data.';
+                ToolTip = 'Creates sample currency pairs: BTCUSDT and ETHUSDT from Binance (no key needed), EURUSD, GBPUSD and USDJPY from Biquote (no key needed).';
                 Image = Setup;
 
                 trigger OnAction()

@@ -8,8 +8,9 @@ codeunit 50105 "SMA Linear Regression Fcst" implements "SMA IForecast Method"
     var
         ForecastMath: Codeunit "SMA Forecast Math";
 
-    procedure Forecast(Series: List of [Decimal]; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
+    procedure Forecast(var ForecastContext: Codeunit "SMA Forecast Context"; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
     var
+        Series: List of [Decimal];
         SumX: Decimal;
         SumY: Decimal;
         SumXX: Decimal;
@@ -26,6 +27,7 @@ codeunit 50105 "SMA Linear Regression Fcst" implements "SMA IForecast Method"
     begin
         Clear(Points);
         Clear(Sigmas);
+        Series := ForecastContext.WindowCloses();
         n := Series.Count();
         if n = 0 then
             exit;

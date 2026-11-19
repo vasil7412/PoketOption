@@ -64,10 +64,15 @@ table 50104 "SMA Backtest Result"
             Caption = 'Direction Hits';
             ToolTip = 'Specifies how many tested forecasts predicted the price direction correctly.';
         }
+        field(16; "Signal Samples"; Integer)
+        {
+            Caption = 'Signals';
+            ToolTip = 'Specifies how many tested forecasts predicted a direction while the price actually changed. Only these count for the hit rate; methods like RSI give a signal only in some situations.';
+        }
         field(12; "Hit Rate %"; Decimal)
         {
             Caption = 'Hit Rate %';
-            ToolTip = 'Specifies the share of correctly predicted directions. Around 50% means the method has no predictive power.';
+            ToolTip = 'Specifies the share of correctly predicted directions among the signals. Around 50% means the method has no predictive power.';
             DecimalPlaces = 0 : 2;
         }
         field(13; MAE; Decimal)

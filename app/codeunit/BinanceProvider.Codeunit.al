@@ -8,7 +8,7 @@ codeunit 50103 "SMA Binance Provider" implements "SMA IRate Data Provider"
 
     var
         RateHelper: Codeunit "SMA Rate Helper";
-        KlinesUrlTok: Label 'https://api.binance.com/api/v3/klines?symbol=%1&interval=%2&startTime=%3&limit=%4', Locked = true;
+        KlinesUrlTok: Label '%1/api/v3/klines?symbol=%2&interval=%3&startTime=%4&limit=%5', Locked = true;
         ProviderNameTok: Label 'Binance', Locked = true;
 
     procedure GetDefaultSymbol(BaseCurrency: Code[10]; QuoteCurrency: Code[10]): Text[30]
@@ -23,6 +23,7 @@ codeunit 50103 "SMA Binance Provider" implements "SMA IRate Data Provider"
 
     procedure FetchCandles(CurrencyPair: Record "SMA Currency Pair"; FromTime: DateTime; MaxCount: Integer; var TempRateCandle: Record "SMA Rate Candle" temporary)
     var
+        RateAnalyzerSetup: Record "SMA Rate Analyzer Setup";
         HttpRequestMessage: HttpRequestMessage;
         ResponseArray: JsonArray;
         KlineToken: JsonToken;
@@ -34,6 +35,7 @@ codeunit 50103 "SMA Binance Provider" implements "SMA IRate Data Provider"
     begin
         HttpRequestMessage.Method := 'GET';
         HttpRequestMessage.SetRequestUri(StrSubstNo(KlinesUrlTok,
+            RateAnalyzerSetup.GetBinanceBaseUrl(),
             CurrencyPair."Provider Symbol",
             GetInterval(CurrencyPair),
             RateHelper.DateTimeToUnixMs(FromTime),

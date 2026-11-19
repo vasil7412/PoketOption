@@ -8,7 +8,7 @@ codeunit 50115 "SMA Rate Analyzer Mgt"
         JobDescriptionLbl: Label 'Rate Analyzer: download rates and build forecasts';
         JobCreatedMsg: Label 'The job queue entry has been created and started. It runs every minute.';
         JobExistsMsg: Label 'The job queue entry already exists. Its status is %1.', Comment = '%1 = status';
-        PairsCreatedMsg: Label '%1 currency pairs have been created. Binance pairs work without an API key and are active. Forex pairs need a Twelve Data API key and are inactive.', Comment = '%1 = number of pairs';
+        PairsCreatedMsg: Label '%1 currency pairs have been created. Binance (crypto) and Biquote (forex) pairs work without an API key and are active.', Comment = '%1 = number of pairs';
 
     procedure CreateDefaultPairs()
     var
@@ -16,9 +16,9 @@ codeunit 50115 "SMA Rate Analyzer Mgt"
     begin
         CreatedCount += CreatePair('BTCUSDT', 'Bitcoin / Tether', 'BTC', 'USDT', "SMA Rate Data Provider"::Binance, 2, true);
         CreatedCount += CreatePair('ETHUSDT', 'Ethereum / Tether', 'ETH', 'USDT', "SMA Rate Data Provider"::Binance, 2, true);
-        CreatedCount += CreatePair('EURUSD', 'Euro / US Dollar', 'EUR', 'USD', "SMA Rate Data Provider"::"Twelve Data", 5, false);
-        CreatedCount += CreatePair('GBPUSD', 'British Pound / US Dollar', 'GBP', 'USD', "SMA Rate Data Provider"::"Twelve Data", 5, false);
-        CreatedCount += CreatePair('USDJPY', 'US Dollar / Japanese Yen', 'USD', 'JPY', "SMA Rate Data Provider"::"Twelve Data", 3, false);
+        CreatedCount += CreatePair('EURUSD', 'Euro / US Dollar', 'EUR', 'USD', "SMA Rate Data Provider"::Biquote, 5, true);
+        CreatedCount += CreatePair('GBPUSD', 'British Pound / US Dollar', 'GBP', 'USD', "SMA Rate Data Provider"::Biquote, 5, true);
+        CreatedCount += CreatePair('USDJPY', 'US Dollar / Japanese Yen', 'USD', 'JPY', "SMA Rate Data Provider"::Biquote, 3, true);
         Message(PairsCreatedMsg, CreatedCount);
     end;
 

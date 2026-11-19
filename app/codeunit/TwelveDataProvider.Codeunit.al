@@ -27,6 +27,8 @@ codeunit 50101 "SMA Twelve Data Provider" implements "SMA IRate Data Provider"
         RateAnalyzerSetup: Record "SMA Rate Analyzer Setup";
         Uri: Codeunit Uri;
         HttpRequestMessage: HttpRequestMessage;
+        HttpResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
         ResponseJson: JsonObject;
         ValuesToken: JsonToken;
         ValueToken: JsonToken;
@@ -48,12 +50,16 @@ codeunit 50101 "SMA Twelve Data Provider" implements "SMA IRate Data Provider"
 
         HttpRequestMessage.Method := 'GET';
         HttpRequestMessage.SetSecretRequestUri(SecretUrl);
-        ResponseJson.ReadFrom(RateHelper.SendRequest(HttpRequestMessage, ProviderNameTok));
+        ResponseText := RateHelper.SendRequest(HttpRequestMessage, HttpResponseMessage);
+        if not ResponseJson.ReadFrom(ResponseText) then
+            RateHelper.ThrowRequestFailed(HttpResponseMessage, ProviderNameTok, ResponseText);
 
-        if RateHelper.GetText(ResponseJson, 'status') = 'error' then begin
-            // An empty window (weekend, holiday) is reported as an error by Twelve Data
+        if (RateHelper.GetText(ResponseJson, 'status') = 'error') or not HttpResponseMessage.IsSuccessStatusCode() then begin
+            // An empty window (weekend, holiday) is reported as an error (HTTP 400) by Twelve Data
             if StrPos(LowerCase(RateHelper.GetText(ResponseJson, 'message')), 'no data') > 0 then
                 exit;
+            if not HttpResponseMessage.IsSuccessStatusCode() then
+                RateHelper.ThrowRequestFailed(HttpResponseMessage, ProviderNameTok, ResponseText);
             Error(ProviderErr, RateHelper.GetText(ResponseJson, 'message'));
         end;
 

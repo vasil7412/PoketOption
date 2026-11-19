@@ -79,16 +79,32 @@ codeunit 50110 "SMA Rate Helper"
 
     procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; ProviderName: Text): Text
     var
-        HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+    begin
+        ResponseText := SendRequest(HttpRequestMessage, HttpResponseMessage);
+        if not HttpResponseMessage.IsSuccessStatusCode() then
+            ThrowRequestFailed(HttpResponseMessage, ProviderName, ResponseText);
+        exit(ResponseText);
+    end;
+
+    /// <summary>
+    /// Sends the request without checking the status code, so the caller can handle provider-specific error responses.
+    /// </summary>
+    procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Text
+    var
+        HttpClient: HttpClient;
         ResponseText: Text;
     begin
         HttpClient.Timeout := 30000;
         HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
         HttpResponseMessage.Content.ReadAs(ResponseText);
-        if not HttpResponseMessage.IsSuccessStatusCode() then
-            Error(RequestFailedErr, ProviderName, HttpResponseMessage.HttpStatusCode(), HttpResponseMessage.ReasonPhrase(), CopyStr(ResponseText, 1, 500));
         exit(ResponseText);
+    end;
+
+    procedure ThrowRequestFailed(HttpResponseMessage: HttpResponseMessage; ProviderName: Text; ResponseText: Text)
+    begin
+        Error(RequestFailedErr, ProviderName, HttpResponseMessage.HttpStatusCode(), HttpResponseMessage.ReasonPhrase(), CopyStr(ResponseText, 1, 500));
     end;
 
     procedure GetText(JsonObject: JsonObject; PropertyName: Text): Text

@@ -17,4 +17,9 @@ enum 50100 "SMA Rate Data Provider" implements "SMA IRate Data Provider"
         Caption = 'Binance';
         Implementation = "SMA IRate Data Provider" = "SMA Binance Provider";
     }
+    value(3; Biquote)
+    {
+        Caption = 'Biquote';
+        Implementation = "SMA IRate Data Provider" = "SMA Biquote Provider";
+    }
 }

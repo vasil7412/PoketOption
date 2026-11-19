@@ -6,10 +6,9 @@ codeunit 50107 "SMA Ensemble Fcst" implements "SMA IForecast Method"
     Access = Internal;
 
     var
-        LinearRegressionFcst: Codeunit "SMA Linear Regression Fcst";
-        HoltDampedFcst: Codeunit "SMA Holt Damped Fcst";
+        ForecastEngine: Codeunit "SMA Forecast Engine";
 
-    procedure Forecast(Series: List of [Decimal]; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
+    procedure Forecast(var ForecastContext: Codeunit "SMA Forecast Context"; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
     var
         LinearPoints: List of [Decimal];
         LinearSigmas: List of [Decimal];
@@ -19,8 +18,8 @@ codeunit 50107 "SMA Ensemble Fcst" implements "SMA IForecast Method"
     begin
         Clear(Points);
         Clear(Sigmas);
-        LinearRegressionFcst.Forecast(Series, Steps, LinearPoints, LinearSigmas);
-        HoltDampedFcst.Forecast(Series, Steps, HoltPoints, HoltSigmas);
+        ForecastEngine.GetForecast(ForecastContext, "SMA Forecast Method"::"Linear Regression", Steps, LinearPoints, LinearSigmas);
+        ForecastEngine.GetForecast(ForecastContext, "SMA Forecast Method"::"Holt Damped Trend", Steps, HoltPoints, HoltSigmas);
         if (LinearPoints.Count() < Steps) or (HoltPoints.Count() < Steps) then
             exit;
 

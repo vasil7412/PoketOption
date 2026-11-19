@@ -148,6 +148,20 @@ page 50105 "SMA Rate Analyzer"
                     SetAutoRefresh(true);
                 end;
             }
+            action(TradeSignal)
+            {
+                Caption = 'Trade Signal';
+                ToolTip = 'Analyzes the forecasts of all methods for all expirations, checks how often each one was right on the recent history and suggests the direction and expiration of a trade, or advises not to trade.';
+                Image = Suggest;
+
+                trigger OnAction()
+                var
+                    TradeSignalPage: Page "SMA Trade Signal";
+                begin
+                    TradeSignalPage.SetPair(Rec);
+                    TradeSignalPage.Run();
+                end;
+            }
             action(Backtest)
             {
                 Caption = 'Run Backtest';
@@ -184,6 +198,22 @@ page 50105 "SMA Rate Analyzer"
                 RunObject = page "SMA Rate Candles";
                 RunPageLink = "Pair Code" = field(Code), Timeframe = field(Timeframe);
             }
+            action(MethodRanking)
+            {
+                Caption = 'Method Ranking';
+                ToolTip = 'Shows how the methods performed on the live tracked forecasts of the pair, ranked per expiration. The Adaptive (Live) method weights the methods by this ranking.';
+                Image = Ranges;
+                RunObject = page "SMA Method Scores";
+                RunPageLink = "Pair Code" = field(Code), Timeframe = field(Timeframe);
+            }
+            action(TrackedForecasts)
+            {
+                Caption = 'Tracked Forecasts';
+                ToolTip = 'Shows the live forecasts of all methods recorded every few minutes and how they matched the actual price.';
+                Image = History;
+                RunObject = page "SMA Tracked Forecasts";
+                RunPageLink = "Pair Code" = field(Code), Timeframe = field(Timeframe);
+            }
             action(Forecasts)
             {
                 Caption = 'Forecasts';
@@ -198,8 +228,10 @@ page 50105 "SMA Rate Analyzer"
             actionref(RefreshNow_Promoted; RefreshNow) { }
             actionref(PauseAutoRefresh_Promoted; PauseAutoRefresh) { }
             actionref(ResumeAutoRefresh_Promoted; ResumeAutoRefresh) { }
+            actionref(TradeSignal_Promoted; TradeSignal) { }
             actionref(Backtest_Promoted; Backtest) { }
             actionref(Forecasts_Promoted; Forecasts) { }
+            actionref(MethodRanking_Promoted; MethodRanking) { }
         }
     }
 

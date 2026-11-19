@@ -10,8 +10,9 @@ codeunit 50106 "SMA Holt Damped Fcst" implements "SMA IForecast Method"
         RateAnalyzerSetup: Record "SMA Rate Analyzer Setup";
         ForecastMath: Codeunit "SMA Forecast Math";
 
-    procedure Forecast(Series: List of [Decimal]; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
+    procedure Forecast(var ForecastContext: Codeunit "SMA Forecast Context"; Steps: Integer; var Points: List of [Decimal]; var Sigmas: List of [Decimal])
     var
+        Series: List of [Decimal];
         Alpha: Decimal;
         Beta: Decimal;
         Phi: Decimal;
@@ -30,11 +31,12 @@ codeunit 50106 "SMA Holt Damped Fcst" implements "SMA IForecast Method"
     begin
         Clear(Points);
         Clear(Sigmas);
+        Series := ForecastContext.WindowCloses();
         n := Series.Count();
         if n = 0 then
             exit;
 
-        RateAnalyzerSetup.GetRecordOnce();
+        ForecastContext.GetSetup(RateAnalyzerSetup);
         Alpha := RateAnalyzerSetup."Holt Alpha";
         Beta := RateAnalyzerSetup."Holt Beta";
         Phi := RateAnalyzerSetup."Holt Damping";

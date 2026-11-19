@@ -26,6 +26,7 @@ page 50106 "SMA Backtest Results"
                     StyleExpr = SkillStyle;
                 }
                 field(Samples; Rec.Samples) { }
+                field("Signal Samples"; Rec."Signal Samples") { }
                 field("Direction Hits"; Rec."Direction Hits") { }
                 field(MAE; Rec.MAE) { }
                 field("Naive MAE"; Rec."Naive MAE") { }

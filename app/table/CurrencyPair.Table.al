@@ -51,12 +51,12 @@ table 50101 "SMA Currency Pair"
         field(6; "Provider Symbol"; Text[30])
         {
             Caption = 'Provider Symbol';
-            ToolTip = 'Specifies the instrument symbol as the provider expects it, for example EUR/USD for Twelve Data, EUR_USD for OANDA, BTCUSDT for Binance.';
+            ToolTip = 'Specifies the instrument symbol as the provider expects it, for example EUR/USD for Twelve Data, EUR_USD for OANDA, BTCUSDT for Binance, EURUSD for Biquote.';
         }
         field(7; Timeframe; Enum "SMA Rate Timeframe")
         {
             Caption = 'Timeframe';
-            ToolTip = 'Specifies the candle timeframe. Twelve Data and Binance support 1 min and 5 min, OANDA also supports 15 sec and 30 sec.';
+            ToolTip = 'Specifies the candle timeframe. Twelve Data, Binance and Biquote support 1 min and 5 min, OANDA also supports 15 sec and 30 sec.';
             InitValue = "1 Min";
 
             trigger OnValidate()
@@ -106,6 +106,12 @@ table 50101 "SMA Currency Pair"
         {
             Caption = 'Last Sync Error';
             ToolTip = 'Specifies the error of the last unsuccessful synchronization.';
+            Editable = false;
+        }
+        field(23; "Last Tracking At"; DateTime)
+        {
+            Caption = 'Last Tracking At';
+            ToolTip = 'Specifies when the forecasts of all methods were last recorded for live learning.';
             Editable = false;
         }
         field(30; "No. of Candles"; Integer)
