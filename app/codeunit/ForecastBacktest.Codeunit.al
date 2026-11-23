@@ -51,6 +51,7 @@ codeunit 50108 "SMA Forecast Backtest"
         PredictedClose: Decimal;
         SumAbsError: Decimal;
         SumNaiveError: Decimal;
+        HasForecast: Boolean;
         Samples: Integer;
         SignalSamples: Integer;
         Hits: Integer;
@@ -64,9 +65,14 @@ codeunit 50108 "SMA Forecast Backtest"
         end;
 
         for i := Lookback to ForecastContext.CandleCount() - Steps do begin
-            ForecastContext.SetPosition(i);
-            ForecastEngine.GetForecast(ForecastContext, ForecastMethod, Steps, Points, Sigmas);
-            if Points.Count() >= Steps then begin
+            // across a gap the candle Steps later is not Steps timeframes later: such an outcome is not tested
+            HasForecast := false;
+            if ForecastContext.IsContinuous(i, i + Steps) then begin
+                ForecastContext.SetPosition(i);
+                ForecastEngine.GetForecast(ForecastContext, ForecastMethod, Steps, Points, Sigmas);
+                HasForecast := Points.Count() >= Steps;
+            end;
+            if HasForecast then begin
                 BaseClose := ForecastContext.CloseAt(i);
                 ActualClose := ForecastContext.CloseAt(i + Steps);
                 PredictedClose := Points.Get(Steps);

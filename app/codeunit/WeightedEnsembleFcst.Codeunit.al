@@ -75,7 +75,7 @@ codeunit 50124 "SMA Weighted Ensemble Fcst" implements "SMA IForecast Method"
                     ForecastEngine.GetForecast(ForecastContext, Enum::"SMA Forecast Method".FromInteger(Components.Get(m)), Steps, MethodPoints, MethodSigmas);
                     if MethodPoints.Count() >= Steps then
                         for s := 1 to EvaluatedSteps do
-                            if q + s <= SavedPosition then begin
+                            if (q + s <= SavedPosition) and ForecastContext.IsContinuous(q, q + s) then begin
                                 PredictedDir := ForecastMath.Sign(MethodPoints.Get(s) - BaseClose);
                                 ActualDir := ForecastMath.Sign(ForecastContext.CloseAt(q + s) - BaseClose);
                                 if (PredictedDir <> 0) and (ActualDir <> 0) then begin

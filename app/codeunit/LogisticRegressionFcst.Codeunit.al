@@ -38,6 +38,9 @@ codeunit 50128 "SMA Logistic Regression Fcst" implements "SMA IForecast Method"
         Position := ForecastContext.Position();
         if Position <= WarmupCandles(RateAnalyzerSetup) then
             exit;
+        // the features need a window without missing candles (no forecast right after a gap or the weekend)
+        if not ForecastContext.IsContinuous(Position - WarmupCandles(RateAnalyzerSetup), Position) then
+            exit;
         StepSigma := ForecastMath.ChangeStdDev(ForecastContext.WindowCloses());
         Price := ForecastContext.CloseAt(Position);
         Features := GetFeatures(ForecastContext, RateAnalyzerSetup, Position);
@@ -142,8 +145,9 @@ codeunit 50128 "SMA Logistic Regression Fcst" implements "SMA IForecast Method"
             FromIndex := WarmupCandles(RateAnalyzerSetup) + 1;
 
         for t := FromIndex to Position - Horizon do
-            // the outcome must be a finished candle; an unchanged price is a refund and teaches nothing
-            if ForecastContext.IsComplete(t + Horizon) then begin
+            // the outcome must be a finished candle exactly Horizon timeframes later, and the feature window must have no gap;
+            // an unchanged price is a refund and teaches nothing
+            if ForecastContext.IsComplete(t + Horizon) and ForecastContext.IsContinuous(t - WarmupCandles(RateAnalyzerSetup), t + Horizon) then begin
                 Direction := ForecastMath.Sign(ForecastContext.CloseAt(t + Horizon) - ForecastContext.CloseAt(t));
                 if Direction <> 0 then begin
                     Samples.Add(GetFeatures(ForecastContext, RateAnalyzerSetup, t));

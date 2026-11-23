@@ -62,6 +62,37 @@ codeunit 50110 "SMA Rate Helper"
         exit(Result);
     end;
 
+    /// <summary>
+    /// True if the time (UTC) falls into the forex weekend: from Friday 21:00 to Sunday 22:00 UTC.
+    /// The window covers the close and the open in both summer and winter time. Providers still deliver
+    /// bars in this window, but they are synthetic quotes with a different behaviour than the real market.
+    /// </summary>
+    procedure IsForexWeekend(Value: DateTime): Boolean
+    var
+        IsoText: Text;
+        UtcDate: Date;
+        Hour: Integer;
+        DayOfWeek: Integer;
+    begin
+        if Value = 0DT then
+            exit(false);
+        IsoText := Format(Value, 0, 9);
+        if not Evaluate(UtcDate, CopyStr(IsoText, 1, 10), 9) then
+            exit(false);
+        if not Evaluate(Hour, CopyStr(IsoText, 12, 2)) then
+            exit(false);
+        DayOfWeek := Date2DWY(UtcDate, 1);
+        case DayOfWeek of
+            5:
+                exit(Hour >= 21);
+            6:
+                exit(true);
+            7:
+                exit(Hour < 22);
+        end;
+        exit(false);
+    end;
+
     procedure GetTimeframeSeconds(Timeframe: Enum "SMA Rate Timeframe"): Integer
     begin
         exit(Timeframe.AsInteger());

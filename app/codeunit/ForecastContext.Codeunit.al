@@ -13,6 +13,7 @@ codeunit 50117 "SMA Forecast Context"
         Closes: List of [Decimal];
         Times: List of [DateTime];
         Completes: List of [Boolean];
+        Segments: List of [Integer];
         CachedPoints: Dictionary of [BigInteger, List of [Decimal]];
         CachedSigmas: Dictionary of [BigInteger, List of [Decimal]];
         MethodStates: Dictionary of [Text, List of [Decimal]];
@@ -27,6 +28,10 @@ codeunit 50117 "SMA Forecast Context"
     procedure Load(CurrencyPair: Record "SMA Currency Pair"; MaxCount: Integer; OnlyComplete: Boolean)
     var
         RateCandle: Record "SMA Rate Candle";
+        RateHelper: Codeunit "SMA Rate Helper";
+        TimeframeDuration: Duration;
+        PrevTime: DateTime;
+        Segment: Integer;
     begin
         Clear(Opens);
         Clear(Highs);
@@ -34,6 +39,7 @@ codeunit 50117 "SMA Forecast Context"
         Clear(Closes);
         Clear(Times);
         Clear(Completes);
+        Clear(Segments);
         ClearCache();
         RateAnalyzerSetup.GetRecordOnce();
         LookbackCandles := RateAnalyzerSetup."Lookback Candles";
@@ -53,6 +59,8 @@ codeunit 50117 "SMA Forecast Context"
         if MaxCount > 1 then
             RateCandle.Next(-(MaxCount - 1));
 #pragma warning restore AA0181, AA0233
+        TimeframeDuration := RateHelper.GetTimeframeDuration(CurrencyPair.Timeframe);
+        Segment := 1;
         repeat
             Opens.Add(RateCandle.Open);
             Highs.Add(RateCandle.High);
@@ -60,6 +68,13 @@ codeunit 50117 "SMA Forecast Context"
             Closes.Add(RateCandle.Close);
             Times.Add(RateCandle."Open Time");
             Completes.Add(RateCandle.Complete);
+            // a missing candle (sync outage, skipped weekend, market break) starts a new continuous segment
+            // AL evaluates both operands of "and", so the subtraction must not run on an empty date
+            if PrevTime <> 0DT then
+                if RateCandle."Open Time" - PrevTime <> TimeframeDuration then
+                    Segment += 1;
+            Segments.Add(Segment);
+            PrevTime := RateCandle."Open Time";
         until RateCandle.Next() = 0;
         CurrentPosition := Closes.Count();
     end;
@@ -158,6 +173,17 @@ codeunit 50117 "SMA Forecast Context"
     procedure IsComplete(Index: Integer): Boolean
     begin
         exit(Completes.Get(Index));
+    end;
+
+    /// <summary>
+    /// True if no candle is missing between FromIndex and ToIndex, so ToIndex is exactly ToIndex - FromIndex timeframes later.
+    /// Check it before comparing a forecast at FromIndex with the outcome at ToIndex, or before using a window that ends at ToIndex.
+    /// </summary>
+    procedure IsContinuous(FromIndex: Integer; ToIndex: Integer): Boolean
+    begin
+        if (FromIndex < 1) or (ToIndex > Segments.Count()) or (FromIndex > ToIndex) then
+            exit(false);
+        exit(Segments.Get(FromIndex) = Segments.Get(ToIndex));
     end;
 
     /// <summary>

@@ -53,12 +53,15 @@ codeunit 50100 "SMA Rate Sync Mgt"
 
             if TempRateCandle.FindSet() then begin
                 repeat
-                    UpsertCandle(TempRateCandle, NowTime, TimeframeDuration);
-                    ProcessedCount += 1;
+                    // weekend bars of forex are synthetic quotes: they are not stored, but the download moves past them
+                    if not (CurrencyPair."Skip Weekend Data" and RateHelper.IsForexWeekend(TempRateCandle."Open Time")) then begin
+                        UpsertCandle(TempRateCandle, NowTime, TimeframeDuration);
+                        ProcessedCount += 1;
+                        if TempRateCandle."Open Time" > LastTime then
+                            LastTime := TempRateCandle."Open Time";
+                    end;
                 until TempRateCandle.Next() = 0;
                 TempRateCandle.FindLast();
-                if TempRateCandle."Open Time" > LastTime then
-                    LastTime := TempRateCandle."Open Time";
                 NextFromTime := TempRateCandle."Open Time" + TimeframeDuration;
             end else
                 // nothing in this window (market closed) - jump over it

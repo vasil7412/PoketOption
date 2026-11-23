@@ -19,6 +19,7 @@ page 50101 "SMA Currency Pairs"
                 field(Provider; Rec.Provider) { }
                 field("Provider Symbol"; Rec."Provider Symbol") { }
                 field(Timeframe; Rec.Timeframe) { }
+                field("Skip Weekend Data"; Rec."Skip Weekend Data") { }
                 field(Active; Rec.Active) { }
                 field("Forecast Method"; Rec."Forecast Method") { }
                 field("Forecast Horizon (Min)"; Rec."Forecast Horizon (Min)") { }
@@ -63,6 +64,29 @@ page 50101 "SMA Currency Pairs"
                     ProcessPairs(CurrencyPair);
                 end;
             }
+            action(FillParameters)
+            {
+                Caption = 'Fill Parameters';
+                ToolTip = 'Fills empty fields of the Rate Analyzer Setup with their defaults, sets Skip Weekend Data on all pairs by their provider (on for forex, off for Binance crypto) and deletes the stored synthetic weekend candles and the forecasts built on them for the pairs that skip weekends.';
+                Image = Apply;
+
+                trigger OnAction()
+                var
+                    DataMaintenance: Codeunit "SMA Data Maintenance";
+                    SetupFieldsFilled: Integer;
+                    PairsUpdated: Integer;
+                    CandlesDeleted: Integer;
+                    ForecastsDeleted: Integer;
+                    ConfirmQst: Label 'This fills the empty (zero or blank) fields of the Rate Analyzer Setup with their defaults, turns Skip Weekend Data on for forex pairs and off for Binance pairs, and deletes the stored weekend candles (Friday 21:00 to Sunday 22:00 UTC) and the forecasts built on them for the forex pairs.\\Do you want to continue?';
+                    DoneMsg: Label 'Setup fields filled with defaults: %1\Pairs updated: %2\Weekend candles deleted: %3\Weekend forecasts deleted: %4', Comment = '%1 = setup fields, %2 = pairs, %3 = candles, %4 = forecasts';
+                begin
+                    if not Confirm(ConfirmQst, false) then
+                        exit;
+                    DataMaintenance.FillParameters(SetupFieldsFilled, PairsUpdated, CandlesDeleted, ForecastsDeleted);
+                    Message(DoneMsg, SetupFieldsFilled, PairsUpdated, CandlesDeleted, ForecastsDeleted);
+                    CurrPage.Update(false);
+                end;
+            }
             action(Setup)
             {
                 Caption = 'Setup';
@@ -102,6 +126,7 @@ page 50101 "SMA Currency Pairs"
         {
             actionref(OpenAnalyzer_Promoted; OpenAnalyzer) { }
             actionref(SyncNow_Promoted; SyncNow) { }
+            actionref(FillParameters_Promoted; FillParameters) { }
             actionref(Candles_Promoted; Candles) { }
             actionref(Forecasts_Promoted; Forecasts) { }
         }

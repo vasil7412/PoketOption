@@ -33,6 +33,7 @@ permissionset 50100 "SMA RATE ANALYZER"
         codeunit "SMA Last Candle Fcst" = X,
         codeunit "SMA Weighted Ensemble Fcst" = X,
         codeunit "SMA Logistic Regression Fcst" = X,
+        codeunit "SMA Data Maintenance" = X,
         page "SMA Trade Signal" = X,
         codeunit "SMA Rate Sync Mgt" = X,
         codeunit "SMA Twelve Data Provider" = X,

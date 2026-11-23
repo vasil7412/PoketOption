@@ -46,6 +46,7 @@ table 50101 "SMA Currency Pair"
             trigger OnValidate()
             begin
                 UpdateProviderSymbol();
+                "Skip Weekend Data" := GetDefaultSkipWeekend();
             end;
         }
         field(6; "Provider Symbol"; Text[30])
@@ -89,6 +90,12 @@ table 50101 "SMA Currency Pair"
             ToolTip = 'Specifies how many minutes ahead the forecast is built.';
             MinValue = 1;
             MaxValue = 60;
+        }
+        field(12; "Skip Weekend Data"; Boolean)
+        {
+            Caption = 'Skip Weekend Data';
+            ToolTip = 'Specifies that candles from Friday 21:00 to Sunday 22:00 UTC are not stored. The forex market is closed then, and the bars some providers still deliver are synthetic quotes that behave very differently (strong mean reversion, tiny ranges) and distort backtests, signals and learning. Turn it off for crypto pairs, which trade around the clock.';
+            InitValue = true;
         }
         field(20; "Last Candle Time"; DateTime)
         {
@@ -187,6 +194,14 @@ table 50101 "SMA Currency Pair"
         if "Evaluated Forecasts" = 0 then
             exit(NoDataTxt);
         exit(StrSubstNo(HitRateTxt, Round("Direction Hits" / "Evaluated Forecasts" * 100, 0.1), "Direction Hits", "Evaluated Forecasts"));
+    end;
+
+    /// <summary>
+    /// Crypto from Binance trades around the clock; the other providers deliver forex and metals, which close on weekends.
+    /// </summary>
+    procedure GetDefaultSkipWeekend(): Boolean
+    begin
+        exit(Provider <> Provider::Binance);
     end;
 
     local procedure UpdateProviderSymbol()

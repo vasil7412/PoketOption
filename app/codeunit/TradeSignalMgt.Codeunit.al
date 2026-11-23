@@ -167,21 +167,23 @@ codeunit 50116 "SMA Trade Signal Mgt"
                 SameHour := GetHour(ForecastContext.TimeAt(i)) = SignalHour;
                 for k := 1 to StepsList.Count() do begin
                     Steps := StepsList.Get(k);
-                    if i + Steps <= LastComplete then begin
-                        PredictedDir := ForecastMath.Sign(Points.Get(Steps) - BaseClose);
-                        ActualDir := ForecastMath.Sign(ForecastContext.CloseAt(i + Steps) - BaseClose);
-                        // no predicted move = no trade, no actual move = refund; neither says anything about accuracy
-                        if (PredictedDir <> 0) and (ActualDir <> 0) then begin
-                            Samples[k] += 1;
-                            if PredictedDir = ActualDir then
-                                Hits[k] += 1;
-                            if SameHour then begin
-                                HourSamples[k] += 1;
+                    // the outcome must be known and exactly Steps timeframes later (no missing candle in between)
+                    if i + Steps <= LastComplete then
+                        if ForecastContext.IsContinuous(i, i + Steps) then begin
+                            PredictedDir := ForecastMath.Sign(Points.Get(Steps) - BaseClose);
+                            ActualDir := ForecastMath.Sign(ForecastContext.CloseAt(i + Steps) - BaseClose);
+                            // no predicted move = no trade, no actual move = refund; neither says anything about accuracy
+                            if (PredictedDir <> 0) and (ActualDir <> 0) then begin
+                                Samples[k] += 1;
                                 if PredictedDir = ActualDir then
-                                    HourHits[k] += 1;
+                                    Hits[k] += 1;
+                                if SameHour then begin
+                                    HourSamples[k] += 1;
+                                    if PredictedDir = ActualDir then
+                                        HourHits[k] += 1;
+                                end;
                             end;
                         end;
-                    end;
                 end;
             end;
         end;

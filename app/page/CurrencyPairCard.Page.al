@@ -27,6 +27,7 @@ page 50102 "SMA Currency Pair Card"
                 field(Provider; Rec.Provider) { }
                 field("Provider Symbol"; Rec."Provider Symbol") { }
                 field(Timeframe; Rec.Timeframe) { }
+                field("Skip Weekend Data"; Rec."Skip Weekend Data") { }
             }
             group(Forecast)
             {
